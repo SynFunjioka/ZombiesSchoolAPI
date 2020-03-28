@@ -1,0 +1,39 @@
+<%include _header%>
+
+<div class="row container">
+    <div class="col-md-12">
+        <form action="/cerebro/new" method="POST">
+            <div class="form-group">
+                <label for="flavor">Sabor</label>
+                <input type="text" class="form-control" name="flavor">
+            </div>
+            <div class="form-group">
+                <label for="Description">Descripción</label>
+                <input type="text" class="form-control" name="Description">
+            </div>
+            <div class="form-group">
+                <label for="IQ">IQ</label>
+                <input type="text" class="form-control" name="IQ">
+            </div>
+            <div class="form-group">
+                <label for="Picture">Imagen</label>
+                <input type=text" class="form-control" name="   Picture">
+            </div>
+            
+            <% if(mensajeError.lenght>0){%>
+            <div id="messageNew"> 
+                <div class="alert alert-warning alert-dismissible fade show mensaje" role="alert">
+                  <strong><%= mensajeError%></strong>
+                  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+              </div>
+            </div>
+            <% } %> 
+                <button class="btn btn-primary">Agregar cerebro</button>
+        </form>
+        
+    </div>
+</div>
+
+<%include _footer%>
