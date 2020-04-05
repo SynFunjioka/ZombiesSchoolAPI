@@ -250,5 +250,50 @@ router.post("/registro/new",function(req,res){
     
 
 
+
+    //graficas
+    router.get('/cerebrosChart/:owner', async (req, res)=>{
+      Usuario.findOne({email: req.params.owner}, async function(error, user){
+        
+        console.log(user.typeA);
+        try{
+          if(user.typeA == 0){
+            var spicy =await Cerebro.find({flavor: {$eq: 'Spicy'}}).count();
+            var sweet =await Cerebro.find({flavor: {$eq: 'Sweet'}}).count();
+            var bitter =await Cerebro.find({flavor: {$eq: 'Bitter'}}).count();
+            var salty =await Cerebro.find({flavor: {$eq: 'Salty'}}).count();
+            
+            var saboresCount ={
+              cSpicy: spicy,
+              cSweet: sweet,
+              cBitter: bitter,
+              cSalty: salty
+            }
+  
+            res.status(200).json(saboresCount);
+
+          }else{
+            spicy =await Cerebro.find({$and: [{flavor: {$eq: 'Spicy'}},{owner: {$eq: user.owner}}]}).count();
+            sweet =await Cerebro.find({$and: [{flavor: {$eq: 'Sweet'}},{owner: {$eq: user.owner}}]}).count();
+            bitter =await Cerebro.find({$and: [{flavor: {$eq: 'Bitter'}},{owner: {$eq: user.owner}}]}).count();
+            salty =await Cerebro.find({$and: [{flavor: {$eq: 'Salty'}},{owner: {$eq: user.owner}}]}).count();
+            
+            var saboresCount ={
+              cSpicy: spicy,
+              cSweet: sweet,
+              cBitter: bitter,
+              cSalty: salty
+            }
+  
+            res.status(200).json(saboresCount);
+          }
+          
+        }catch (e){
+          res.status(500).json(e);
+        }
+      } 
+    );
+  });
+
 module.exports = router;
    
