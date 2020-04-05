@@ -17,7 +17,11 @@ var modelSchema=mongoose.Schema({
         max:[1000,"El límite de IQ es de 1000"],
         require:[true,"Debe de ingresar una IQ para el cerebro"]
     },
-    picture:String
+    picture:String,
+    
+    owner:{
+        type: String
+    }
 });
 
 var Cerebro=mongoose.model("Cerebro",modelSchema);

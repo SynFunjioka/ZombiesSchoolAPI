@@ -1,27 +1,47 @@
 let express = require('express');
 let router = express.Router();
-let jwt= require('jsonwebtoken');
 
 let Zombie=require("../models/Zombie"); //modelo
 let Cerebro=require("../models/Cerebro"); //modelo
 let Usuario=require("../models/Usuario"); //modelo
 
-var bcrypt = require('bcrypt');
 
-router.get('/zombies', async (req, res)=>{
-    Zombie.find().exec((error,zombies)=>{
-        if(!error){
-            res.status(200).json(zombies);
+router.get('/zombies/:owner', async (req, res)=>{
+    Usuario.findOne({email: req.params.owner}, function(error, user){
+      
+      console.log(user.typeA);
+      try{
+        //admin
+        if(user.typeA == 0){
+          Zombie.find().exec((error, zombies)=>{
+            if(!error){
+                res.status(200).json(zombies);
+            }else{
+                res.status(500).json(error);
+            }
+          });
+          //normal
         }else{
-            res.status(500).json(error);
+          Zombie.find({owner:{$eq: req.params.owner}}).exec((error,zombies)=>{
+            if(!error){
+              
+                res.status(200).json(zombies);
+            }else{
+                res.status(500).json(error);
+            }
+          });
         }
-    });
+      }catch (e){
+        res.status(500).json(e);
+      }
+    } 
+  );
 });
 
 router.get('/zombieData/:id', async (req, res)=>{
   try{
     let zombieData = Zombie.findById(req.params.id);
-    res.status(200).json(zombieData,{milk: 'puto'});
+    res.status(200).json(zombieData);
 
   }catch(e){
     res.status(500).json({mensajeError:e}); 
@@ -35,7 +55,8 @@ router.post("/zombies/new",function(req,res){
     let nuevoZombie=new Zombie({
       name: data.name,
       email:data.email,
-      type: data.type
+      type: data.type,
+      owner: data.owner
     });
     nuevoZombie.save(function(error){
       if(error){
@@ -95,16 +116,36 @@ router.put('/cerebros/edit/:id', async function(req,res){
   }
 });
 
-router.get('/cerebros', function(req,res){
-  Cerebro.find().exec(function(error,cerebros)
-  {
-    if(!error)
-    {
-      res.status(200).json(cerebros);
-    }else{
-      res.status(500).json("/prueba");
+router.get('/cerebros/:owner', function(req,res){
+  Usuario.findOne({email: req.params.owner}, async function(error, user){
+    console.log(user.typeA);
+    try{
+      //admin
+      if(user.typeA == 0){
+        Cerebro.find().exec((error, cerebros)=>{
+          if(!error){
+              res.status(200).json(cerebros);
+          }else{
+              res.status(500).json(error);
+          }
+        });
+        //normal
+      }else{
+        Cerebro.find({owner:{$eq: req.params.owner}}).exec((error,cerebros)=>{
+          if(!error){
+            
+              res.status(200).json(cerebros);
+          }else{
+              res.status(500).json(error);
+          }
+        });
+      }
+    }catch (e){
+      res.status(500).json(e);
     }
-  });
+  } 
+);
+
 });
 
 router.post("/cerebro/new",function(req,res){
@@ -114,7 +155,8 @@ router.post("/cerebro/new",function(req,res){
     flavor: data.flavor,
     Description:data.Description,
     IQ: data.IQ,
-    Picture:data.Picture  
+    Picture:data.Picture,
+    owner: data.owner
   });
   nuevoCerebro.save(function(error){
     if(error){
@@ -146,7 +188,8 @@ router.post("/registro/new",function(req,res){
 
   let nuevoUser=new Usuario({
     email: data.email,
-    password: data.password
+    password: data.password,
+    typeA: 1
   });
   nuevoUser.save(function(error){
     if(error){

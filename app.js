@@ -12,7 +12,6 @@ var methodOverride=require('method-override');
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
-var jwt= require('jsonwebtoken');
 var app = express();
 
 //Conexión a la base de datos.

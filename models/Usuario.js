@@ -9,6 +9,9 @@ var modelSchema=mongoose.Schema({
     password:{
         type:String,
         required:[true,"Falta la contraseña (campo obligatorio)"]
+    },
+    typeA:{
+        type: Number
     }
 });
 

@@ -13,6 +13,9 @@ var modelSchema=mongoose.Schema({
     type:{
         type:String,
         enum:["Zombie alumno","Zombie maestro"]
+    },
+    owner:{
+        type: String
     }
 });
 
