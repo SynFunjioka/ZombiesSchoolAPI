@@ -4,6 +4,7 @@ let router = express.Router();
 let Zombie=require("../models/Zombie"); //modelo
 let Cerebro=require("../models/Cerebro"); //modelo
 let Usuario=require("../models/Usuario"); //modelo
+let PedidoCerebro= require("../models/PedidoCerebro"); //modelo
 
 
 router.get('/zombies/:owner', async (req, res)=>{
@@ -49,7 +50,7 @@ router.get('/zombieData/:id', async (req, res)=>{
   
 });
 
-router.post("/zombies/new",function(req,res){
+router.post("/zombies/new", async function(req,res){
     let data=req.body;
   
     let nuevoZombie=new Zombie({
@@ -116,7 +117,7 @@ router.put('/cerebros/edit/:id', async function(req,res){
   }
 });
 
-router.get('/cerebros/:owner', function(req,res){
+router.get('/cerebros/:owner', async function(req,res){
   Usuario.findOne({email: req.params.owner}, async function(error, user){
     console.log('Tipo de usuario: ' + user.typeA);
     try{
@@ -148,7 +149,7 @@ router.get('/cerebros/:owner', function(req,res){
 
 });
 
-router.post("/cerebro/new",function(req,res){
+router.post("/cerebro/new",async function(req,res){
   let data=req.body;
 
   let nuevoCerebro=new Cerebro ({
@@ -183,7 +184,7 @@ router.delete('/cerebros/delete/:id', async function(req,res){
 
 
 //---------------------------------
-router.post("/registro/new",function(req,res){
+router.post("/registro/new",async function(req,res){
   let data=req.body;
 
   let nuevoUser=new Usuario({
@@ -308,12 +309,49 @@ router.post("/registro/new",function(req,res){
              usuariosCount[pos] = {y:cantidad, label: users[pos].email};
           }
           
-            
+
           res.status(200).json(usuariosCount);
         }else{
           res.status(500).json(error);
         }
       });
   });
+
+
+  //__________________________________________________________________________PEDIDOS
+
+  router.post('/pedidos/cerebros/new', async function(req,res){
+    var data = req.body;
+    let nuevoPedido=new PedidoCerebro({
+      cerebro: data.cerebro,
+      emailUsuario:data.emailUsuario,
+      tipoEnvio: data.envio,
+      cantidad: data.cantidadCerebros,
+      fechaPedido:data.fPedido,
+      fechaEntrega:data.fEntrega
+    });
+    nuevoPedido.save(function(error,newData){
+      if(error){
+        let errMessage=error.message;
+        res.status(500).json({mensajeError:errMessage});
+        return error;
+      }else{
+        res.status(200).json(newData);
+        }
+      });
+  });
+
+
+
+  router.get('/pedidos/cerebros/:user', async function(req, res){
+    PedidoCerebro.find({emailUsuario: req.params.user}, function(error, data){
+      if(!error){
+        res.status(200).json(data);
+      }else{
+        res.status(500).json(error);
+      }
+    });
+});
+
 module.exports = router;
    
